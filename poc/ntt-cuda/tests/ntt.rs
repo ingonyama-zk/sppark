@@ -150,3 +150,9 @@ fn test_against_arkworks() {
 
     test_ntt::<Fr, Fr, _, GeneralEvaluationDomain<Fr>>(rng);
 }
+
+#[test]
+fn test_arith() {
+    use ntt_cuda::arith_run;
+    arith_run();
+}

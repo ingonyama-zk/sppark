@@ -291,5 +291,43 @@ public:
     }
 };
 
+extern "C" int bench_fr_add_cuda(size_t device_id, size_t samples, size_t blocks, size_t threads)
+{
+    fr_t f1 = forward_roots_of_unity[6]; // TODO: any value, random
+    fr_t f2 = forward_roots_of_unity[7];
+
+    fr_t h_answer;
+    fr_t *d_answer;
+    cudaMalloc(&d_answer, sizeof(fr_t));
+    CUDA_OK(cudaGetLastError());
+
+    bench_add_kernel<<<blocks, threads>>>(f1, f2, d_answer, (size_t)(blocks * threads), samples);
+    CUDA_OK(cudaGetLastError());
+    
+    cudaDeviceSynchronize();
+
+    cudaMemcpy(&h_answer, d_answer, sizeof(fr_t), cudaMemcpyDeviceToHost);
+    cudaFree(d_answer);
+    return 0;
+}
+
+extern "C" int bench_fr_mul_cuda(size_t device_id, size_t samples, size_t blocks, size_t threads)
+{
+    fr_t f1 = forward_roots_of_unity[6]; // TODO: any value, random
+    fr_t f2 = forward_roots_of_unity[7];
+
+    fr_t h_answer;
+    fr_t *d_answer;
+    cudaMalloc(&d_answer, sizeof(fr_t));
+
+    bench_mul_kernel<<<blocks, threads>>>(f1, f2, d_answer, (size_t)(blocks * threads), samples);
+    
+    CUDA_OK(cudaGetLastError());
+    cudaDeviceSynchronize();
+
+    cudaMemcpy(&h_answer, d_answer, sizeof(fr_t), cudaMemcpyDeviceToHost);
+    cudaFree(d_answer);
+    return 0;
+}
 #endif
 #endif
