@@ -4,10 +4,14 @@ version = "0.1.0"
 edition = "2021"
 publish = false
 
+
+# [lib]
+# crate-type = ["rlib", "staticlib"]
+
 [features]
 # By default, compile with ADX extension if the host supports it.
 # Binary can be executed on systems similar to the host.
-default = []
+default = ["bls12_381"]
 # Compile in portable mode, without ISA extensions.
 # Binary can be executed on all systems.
 portable = [ "blst/portable" ]
@@ -15,7 +19,7 @@ portable = [ "blst/portable" ]
 # Binary can be executed on Broadwell+ and Ryzen+ systems.
 force-adx = [ "blst/force-adx" ]
 bls12_377 = []
-bls12_381 = []
+bls12_381 = ["msm-cuda/bls12_381"]
 pallas = [ "semolina" ]
 vesta = [ "semolina" ]
 bn254 = []
@@ -27,6 +31,7 @@ quiet = []
 blst = "~0.3.11"
 semolina = { version = "~0.1.2", optional = true }
 sppark = { path = "../../rust" }
+msm-cuda = { path = "../msm-cuda", features=["bls12_381"] }
 
 [build-dependencies]
 cc = "^1.0.70"
@@ -41,3 +46,8 @@ ark-bls12-377 = { version = "0.3.0" }
 ark-pallas = { version = "0.3.0" }
 ark-vesta = { version = "0.3.0" }
 ark-bn254 = { version = "0.3.0" }
+criterion = { version = "0.3", features = [ "html_reports" ] }
+
+[[bench]]
+name = "ntt"
+harness = false

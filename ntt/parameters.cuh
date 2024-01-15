@@ -14,7 +14,7 @@
 # elif defined(FEATURE_BABY_BEAR)
 #  define MAX_LG_DOMAIN_SIZE 27
 # else
-#  define MAX_LG_DOMAIN_SIZE 28 // tested only up to 2^31 for now
+#  define MAX_LG_DOMAIN_SIZE 30 // tested only up to 2^31 for now
 # endif
 #endif
 

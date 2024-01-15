@@ -313,6 +313,68 @@ void coalesced_store(fr_t* inout, index_t idx, const fr_t r[z_count],
         inout[idx] = r[z];
 }
 
+__global__ void bench_mul_kernel(fr_t a, fr_t b, fr_t *r, size_t n, size_t samples)
+{
+#ifdef __CUDA_ARCH__
+  // S f1 = group_gen;
+  // S f2 = f1 * group_gen_inverse;
+
+  int tid = blockDim.x * blockIdx.x + threadIdx.x;
+  if (tid < n)
+  {      
+    // int scalar_id = tid % n_scalars;
+    // element_vec[tid] = scalar_vec[scalar_id] * element_vec[tid];
+
+    fr_t t;
+
+    for (int s2 = 0; s2 < samples; s2++)
+    {
+      t = t * b;
+
+    }
+
+    t = a * t;
+
+    if (tid == 0)
+    {
+      *r = t;
+    }
+  }
+  #endif
+}
+
+__launch_bounds__(1024) __global__
+void bench_add_kernel(fr_t a, fr_t b, fr_t *r, size_t n, size_t samples)
+{
+    #ifdef __CUDA_ARCH__
+  // S f1 = group_gen;
+  // S f2 = f1 * group_gen_inverse;
+
+  int tid = blockDim.x * blockIdx.x + threadIdx.x;
+  if (tid < n)
+  {
+    // int scalar_id = tid % n_scalars;
+    // element_vec[tid] = scalar_vec[scalar_id] * element_vec[tid];
+
+    fr_t t;
+    // for (int s1 = 0; s1 < samples; s1++)
+    // {
+    for (int s2 = 0; s2 < samples; s2++)
+    {
+      t = t + b;
+    }
+    // }
+
+    t = a + t;
+
+    if (tid == 0)
+    {
+      *r = t;
+    }
+  }
+  #endif
+}
+
 #if defined(FEATURE_BABY_BEAR) || defined(FEATURE_GOLDILOCKS)
 const static int Z_COUNT = 256/8/sizeof(fr_t);
 # include "kernels/gs_mixed_radix_narrow.cu"
